@@ -1,4 +1,4 @@
-﻿
+
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import '../App.css'
@@ -140,7 +140,7 @@ function EmployeeDashboard() {
               <p>Check the latest status of your requests.</p>
             </div>
 
-            <Link to="/leave-history">View History â†’</Link>
+            <Link to="/leave-history">View History &rarr;</Link>
           </div>
 
           {leaves.length === 0 ? (
@@ -195,17 +195,17 @@ function EmployeeDashboard() {
           <div className="quick-links">
             <Link to="/apply-leave" className="quick-link">
               <strong>Apply for Leave</strong>
-              <span>Submit a new leave request â†’</span>
+              <span>Submit a new leave request &rarr;</span>
             </Link>
 
             <Link to="/leave-history" className="quick-link">
               <strong>Leave History</strong>
-              <span>Review your previous applications â†’</span>
+              <span>Review your previous applications &rarr;</span>
             </Link>
 
             <Link to="/profile" className="quick-link">
               <strong>My Profile</strong>
-              <span>View and update your details â†’</span>
+              <span>View and update your details &rarr;</span>
             </Link>
           </div>
         </section>

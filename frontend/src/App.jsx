@@ -1,4 +1,4 @@
-﻿
+
 import { Link, Navigate, Route, Routes } from 'react-router-dom'
 import Login from './pages/Login'
 import Register from './pages/Register'
@@ -63,7 +63,7 @@ function Home() {
                 to="/register"
                 className="btn btn-primary btn-large"
               >
-                Get Started <span aria-hidden="true">â†’</span>
+                Get Started <span aria-hidden="true">&rarr;</span>
               </Link>
 
               <Link
@@ -261,7 +261,7 @@ function Home() {
             to="/register"
             className="btn btn-white btn-large"
           >
-            Create Account â†’
+            Create Account &rarr;
           </Link>
         </section>
       </main>
