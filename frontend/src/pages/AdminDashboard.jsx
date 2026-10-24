@@ -1,290 +1,464 @@
-
-import { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import '../App.css'
+﻿
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import API_URL from "../api";
-function AdminDashboard() {
-  const navigate = useNavigate()
 
-  const [leaves, setLeaves] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
+function AdminDashboard() {
+  const navigate = useNavigate();
+
+  const [leaves, setLeaves] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    const token = localStorage.getItem('token')
-    const savedUser = localStorage.getItem('user')
+    const fetchLeaves = async () => {
+      const token = localStorage.getItem("token");
 
-    if (!token || !savedUser) {
-      navigate('/login', { replace: true })
-      return
-    }
-
-    try {
-      const user = JSON.parse(savedUser)
-
-      if (user.role !== 'admin') {
-        navigate('/employee-dashboard', { replace: true })
-        return
+      if (!token) {
+        navigate("/login");
+        return;
       }
 
-      fetchLeaves(token)
-    } catch {
-      localStorage.removeItem('token')
-      localStorage.removeItem('user')
-      navigate('/login', { replace: true })
-    }
-  }, [navigate])
+      try {
+        setLoading(true);
+        setError("");
 
-  const fetchLeaves = async (
-    token = localStorage.getItem('token'),
-  ) => {
-    try {
-      setLoading(true)
-      setError('')
+        const response = await fetch(
+          `${API_URL}/api/leaveApplications`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
-      const response = await fetch(
-        `${API_URL}/api/leaveApplications`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      )
+        if (response.status === 401 || response.status === 403) {
+          setError("You are not authorized to view leave applications.");
+          setLeaves([]);
+          return;
+        }
 
-      const data = await response.json()
+        if (!response.ok) {
+          throw new Error("Failed to fetch leave applications.");
+        }
 
-      if (!response.ok) {
-        throw new Error(
-          data.message || 'Failed to load leave applications.',
-        )
+        const data = await response.json();
+
+        setLeaves(Array.isArray(data) ? data : data.leaveApplications || []);
+      } catch (err) {
+        console.error("Error fetching leave applications:", err);
+        setError(
+          "Unable to load leave applications. Please check your connection."
+        );
+      } finally {
+        setLoading(false);
       }
+    };
 
-      const applications = Array.isArray(data)
-        ? data
-        : data.leaveApplications || []
+    fetchLeaves();
+  }, [navigate]);
 
-      setLeaves(applications)
-    } catch (err) {
-      setError(
-        err.message || 'Unable to load leave applications.',
-      )
-    } finally {
-      setLoading(false)
-    }
-  }
+  const pendingLeaves = leaves.filter(
+    (leave) => leave.leaveStatus === "Pending"
+  ).length;
 
-  const pendingCount = leaves.filter(
-    (leave) => leave.leaveStatus === 'Pending',
-  ).length
+  const approvedLeaves = leaves.filter(
+    (leave) => leave.leaveStatus === "Approved"
+  ).length;
 
-  const approvedCount = leaves.filter(
-    (leave) => leave.leaveStatus === 'Approved',
-  ).length
-
-  const rejectedCount = leaves.filter(
-    (leave) => leave.leaveStatus === 'Rejected',
-  ).length
+  const rejectedLeaves = leaves.filter(
+    (leave) => leave.leaveStatus === "Rejected"
+  ).length;
 
   const handleLogout = () => {
-    localStorage.removeItem('token')
-    localStorage.removeItem('user')
-    navigate('/login', { replace: true })
-  }
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    navigate("/login");
+  };
 
   const formatDate = (date) => {
-    if (!date) return '-'
+    if (!date) return "-";
 
-    const parsedDate = new Date(date)
-
-    if (Number.isNaN(parsedDate.getTime())) return '-'
-
-    return parsedDate.toLocaleDateString('en-IN', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-    })
-  }
+    return new Date(date).toLocaleDateString("en-IN", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+  };
 
   const getStatusClass = (status) => {
-    const normalizedStatus = (status || 'Pending').toLowerCase()
-
-    if (
-      ['pending', 'approved', 'rejected'].includes(normalizedStatus)
-    ) {
-      return `status-${normalizedStatus}`
+    switch (status) {
+      case "Approved":
+        return "approved";
+      case "Rejected":
+        return "rejected";
+      default:
+        return "pending";
     }
-
-    return 'status-pending'
-  }
-
-  const recentLeaves = [...leaves]
-    .sort(
-      (a, b) =>
-        new Date(b.applicationDate || b.createdAt || 0).getTime() -
-        new Date(a.applicationDate || a.createdAt || 0).getTime(),
-    )
-    .slice(0, 5)
+  };
 
   return (
-    <main className="dashboard-page">
-      <header className="dashboard-header">
-        <Link to="/admin-dashboard" className="auth-brand">
-          <span className="brand-icon">EL</span>
-          <span>LeavePortal Admin</span>
-        </Link>
+    <div className="admin-dashboard">
+      <style>{`
+        * {
+          box-sizing: border-box;
+        }
 
-        <div className="employee-form-actions">
-          <button
-            type="button"
-            className="btn btn-outline"
-            onClick={() => fetchLeaves()}
-            disabled={loading}
-          >
-            Refresh
-          </button>
+        .admin-dashboard {
+          min-height: 100vh;
+          padding: 30px;
+          background: #f4f7fb;
+          color: #1e293b;
+          font-family: Arial, sans-serif;
+        }
 
-          <button
-            type="button"
-            className="btn btn-primary"
-            onClick={handleLogout}
-          >
-            Logout
-          </button>
+        .admin-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          gap: 16px;
+          flex-wrap: wrap;
+          margin-bottom: 30px;
+        }
+
+        .admin-header h1 {
+          margin: 0 0 8px;
+          font-size: 28px;
+        }
+
+        .admin-header p {
+          margin: 0;
+          color: #64748b;
+        }
+
+        .logout-button {
+          padding: 10px 18px;
+          border: none;
+          border-radius: 8px;
+          background: #dc2626;
+          color: white;
+          cursor: pointer;
+          font-size: 14px;
+        }
+
+        .logout-button:hover {
+          background: #b91c1c;
+        }
+
+        .stats-grid {
+          display: grid;
+          grid-template-columns: repeat(4, minmax(0, 1fr));
+          gap: 20px;
+          margin-bottom: 30px;
+        }
+
+        .stat-card {
+          padding: 22px;
+          border-radius: 12px;
+          background: white;
+          box-shadow: 0 3px 12px rgba(15, 23, 42, 0.06);
+        }
+
+        .stat-card p {
+          margin: 0 0 12px;
+          color: #64748b;
+          font-size: 14px;
+        }
+
+        .stat-card h2 {
+          margin: 0;
+          font-size: 30px;
+        }
+
+        .management-grid {
+          display: grid;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          gap: 20px;
+          margin-bottom: 30px;
+        }
+
+        .management-card {
+          display: block;
+          padding: 24px;
+          border-radius: 12px;
+          background: white;
+          color: #1e293b;
+          text-decoration: none;
+          box-shadow: 0 3px 12px rgba(15, 23, 42, 0.06);
+          transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .management-card:hover {
+          transform: translateY(-3px);
+          box-shadow: 0 7px 18px rgba(15, 23, 42, 0.1);
+        }
+
+        .card-icon {
+          margin-bottom: 14px;
+          font-size: 34px;
+        }
+
+        .management-card h3 {
+          margin: 0 0 10px;
+          font-size: 18px;
+        }
+
+        .management-card p {
+          margin: 0 0 16px;
+          color: #64748b;
+          font-size: 14px;
+          line-height: 1.6;
+        }
+
+        .card-link {
+          color: #2563eb;
+          font-size: 14px;
+          font-weight: bold;
+        }
+
+        .recent-section {
+          padding: 24px;
+          border-radius: 12px;
+          background: white;
+          box-shadow: 0 3px 12px rgba(15, 23, 42, 0.06);
+        }
+
+        .recent-section h2 {
+          margin: 0 0 20px;
+          font-size: 21px;
+        }
+
+        .table-wrapper {
+          overflow-x: auto;
+        }
+
+        .leave-table {
+          width: 100%;
+          border-collapse: collapse;
+          text-align: left;
+        }
+
+        .leave-table th,
+        .leave-table td {
+          padding: 14px 12px;
+          border-bottom: 1px solid #e2e8f0;
+          font-size: 14px;
+          white-space: nowrap;
+        }
+
+        .leave-table th {
+          background: #f8fafc;
+          color: #475569;
+        }
+
+        .status-badge {
+          display: inline-block;
+          padding: 5px 10px;
+          border-radius: 20px;
+          font-size: 12px;
+          font-weight: bold;
+        }
+
+        .status-badge.pending {
+          background: #fef3c7;
+          color: #92400e;
+        }
+
+        .status-badge.approved {
+          background: #dcfce7;
+          color: #166534;
+        }
+
+        .status-badge.rejected {
+          background: #fee2e2;
+          color: #991b1b;
+        }
+
+        .message {
+          padding: 15px;
+          margin-bottom: 20px;
+          border-radius: 8px;
+          background: #fee2e2;
+          color: #991b1b;
+        }
+
+        .empty-message {
+          padding: 25px 10px;
+          color: #64748b;
+          text-align: center;
+        }
+
+        .view-all {
+          display: inline-block;
+          margin-top: 18px;
+          color: #2563eb;
+          font-weight: bold;
+          text-decoration: none;
+        }
+
+        @media (max-width: 900px) {
+          .stats-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+          }
+
+          .management-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+          }
+        }
+
+        @media (max-width: 600px) {
+          .admin-dashboard {
+            padding: 16px;
+          }
+
+          .stats-grid,
+          .management-grid {
+            grid-template-columns: 1fr;
+          }
+
+          .admin-header h1 {
+            font-size: 24px;
+          }
+
+          .recent-section {
+            padding: 16px;
+          }
+        }
+      `}</style>
+
+      <header className="admin-header">
+        <div>
+          <h1>Admin Dashboard</h1>
+          <p>Employee Leave Management Portal</p>
         </div>
+
+        <button
+          type="button"
+          className="logout-button"
+          onClick={handleLogout}
+        >
+          Logout
+        </button>
       </header>
 
-      <section className="dashboard-content">
-        <div className="dashboard-welcome">
-          <div>
-            <p className="dashboard-eyebrow">ADMIN WORKSPACE</p>
-            <h1>Admin Dashboard</h1>
-            <p>
-              Manage employees, review leave requests, and view reports.
-            </p>
-          </div>
+      {error && <div className="message">{error}</div>}
+
+      <section className="stats-grid">
+        <div className="stat-card">
+          <p>Total Leave Applications</p>
+          <h2>{loading ? "..." : leaves.length}</h2>
         </div>
 
-        {error && <div className="form-error">{error}</div>}
+        <div className="stat-card">
+          <p>Pending Applications</p>
+          <h2>{loading ? "..." : pendingLeaves}</h2>
+        </div>
 
-        <section className="dashboard-stats">
-          <article className="stat-card">
-            <p>Total Applications</p>
-            <h2>{loading ? '...' : leaves.length}</h2>
-          </article>
+        <div className="stat-card">
+          <p>Approved Applications</p>
+          <h2>{loading ? "..." : approvedLeaves}</h2>
+        </div>
 
-          <article className="stat-card">
-            <p>Pending Requests</p>
-            <h2>{loading ? '...' : pendingCount}</h2>
-          </article>
+        <div className="stat-card">
+          <p>Rejected Applications</p>
+          <h2>{loading ? "..." : rejectedLeaves}</h2>
+        </div>
+      </section>
 
-          <article className="stat-card">
-            <p>Approved Requests</p>
-            <h2>{loading ? '...' : approvedCount}</h2>
-          </article>
+      <section className="management-grid">
+        <Link to="/manage-leaves" className="management-card">
+          <div className="card-icon">📋</div>
+          <h3>Manage Leave Requests</h3>
+          <p>Review, approve, or reject applications.</p>
+          <span className="card-link">
+            View Requests &rarr;
+          </span>
+        </Link>
 
-          <article className="stat-card">
-            <p>Rejected Requests</p>
-            <h2>{loading ? '...' : rejectedCount}</h2>
-          </article>
-        </section>
+        <Link to="/manage-employees" className="management-card">
+          <div className="card-icon">👥</div>
+          <h3>Manage Employees</h3>
+          <p>Add, edit, view, and delete employee records.</p>
+          <span className="card-link">
+            View Employees &rarr;
+          </span>
+        </Link>
 
-        <section className="dashboard-panel">
-          <div className="panel-heading">
-            <div>
-              <h2>Admin Actions</h2>
-              <p>Choose a module to manage the portal.</p>
-            </div>
-          </div>
+        <Link to="/leave-reports" className="management-card">
+          <div className="card-icon">📊</div>
+          <h3>Leave Reports</h3>
+          <p>View application totals and leave records.</p>
+          <span className="card-link">
+            View Reports &rarr;
+          </span>
+        </Link>
+      </section>
 
-          <div className="quick-links">
-            <Link to="/manage-leaves" className="quick-link">
-              <span>ðŸ“‹</span>
-              <div>
-                <h3>Manage Leave Requests</h3>
-                <p>Review, approve, or reject applications.</p>
-              </div>
-            </Link>
+      <section className="recent-section">
+        <h2>Recent Leave Applications</h2>
 
-            <Link to="/manage-employees" className="quick-link">
-              <span>ðŸ‘¥</span>
-              <div>
-                <h3>Manage Employees</h3>
-                <p>Add, edit, view, and delete employee records.</p>
-              </div>
-            </Link>
+        {loading ? (
+          <p className="empty-message">
+            Loading leave applications...
+          </p>
+        ) : leaves.length === 0 ? (
+          <p className="empty-message">
+            No leave applications found.
+          </p>
+        ) : (
+          <div className="table-wrapper">
+            <table className="leave-table">
+              <thead>
+                <tr>
+                  <th>Leave ID</th>
+                  <th>Employee ID</th>
+                  <th>Leave Type</th>
+                  <th>From Date</th>
+                  <th>To Date</th>
+                  <th>Applied On</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
 
-            <Link to="/leave-reports" className="quick-link">
-              <span>ðŸ“Š</span>
-              <div>
-                <h3>Leave Reports</h3>
-                <p>View application totals and leave records.</p>
-              </div>
-            </Link>
-          </div>
-        </section>
-
-        <section className="dashboard-panel">
-          <div className="panel-heading">
-            <div>
-              <h2>Recent Leave Applications</h2>
-              <p>Showing the latest five applications.</p>
-            </div>
-
-            <Link to="/manage-leaves" className="btn btn-outline">
-              View All
-            </Link>
-          </div>
-
-          {loading ? (
-            <p>Loading leave applications...</p>
-          ) : leaves.length === 0 ? (
-            <div className="dashboard-empty">
-              <h3>No leave applications yet</h3>
-              <p>Employee leave requests will appear here.</p>
-            </div>
-          ) : (
-            <div className="table-wrapper">
-              <table className="leave-table">
-                <thead>
-                  <tr>
-                    <th>Employee ID</th>
-                    <th>Leave Type</th>
-                    <th>From Date</th>
-                    <th>To Date</th>
-                    <th>Applied On</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                  {recentLeaves.map((leave) => (
+              <tbody>
+                {[...leaves]
+                  .sort(
+                    (a, b) =>
+                      new Date(b.applicationDate || 0) -
+                      new Date(a.applicationDate || 0)
+                  )
+                  .slice(0, 10)
+                  .map((leave) => (
                     <tr key={leave._id || leave.leaveId}>
-                      <td>{leave.employeeId || '-'}</td>
-                      <td>{leave.leaveType || '-'}</td>
+                      <td>{leave.leaveId || "-"}</td>
+                      <td>{leave.employeeId || "-"}</td>
+                      <td>{leave.leaveType || "-"}</td>
                       <td>{formatDate(leave.fromDate)}</td>
                       <td>{formatDate(leave.toDate)}</td>
                       <td>{formatDate(leave.applicationDate)}</td>
                       <td>
                         <span
                           className={`status-badge ${getStatusClass(
-                            leave.leaveStatus,
+                            leave.leaveStatus
                           )}`}
                         >
-                          {leave.leaveStatus || 'Pending'}
+                          {leave.leaveStatus || "Pending"}
                         </span>
                       </td>
                     </tr>
                   ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </section>
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        <Link to="/manage-leaves" className="view-all">
+          View All Leave Requests &rarr;
+        </Link>
       </section>
-    </main>
-  )
+    </div>
+  );
 }
 
-export default AdminDashboard
-
-
+export default AdminDashboard;
