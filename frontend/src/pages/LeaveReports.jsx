@@ -94,7 +94,7 @@ function LeaveReports() {
         </Link>
 
         <Link to="/admin-dashboard" className="btn btn-outline">
-          â† Dashboard
+          &larr; Dashboard
         </Link>
       </header>
 
@@ -195,4 +195,5 @@ function LeaveReports() {
 }
 
 export default LeaveReports
+
 

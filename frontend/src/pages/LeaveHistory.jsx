@@ -82,7 +82,7 @@ function LeaveHistory() {
         </Link>
 
         <Link to="/employee-dashboard" className="btn btn-outline">
-          â† Dashboard
+          &larr; Dashboard
         </Link>
       </header>
 
@@ -163,4 +163,5 @@ function LeaveHistory() {
 }
 
 export default LeaveHistory
+
 

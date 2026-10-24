@@ -145,7 +145,7 @@ function Login() {
         </p>
 
         <p className="auth-back">
-          <Link to="/">â† Back to Home</Link>
+          <Link to="/">&larr; Back to Home</Link>
         </p>
       </section>
     </main>
@@ -153,4 +153,5 @@ function Login() {
 }
 
 export default Login
+
 

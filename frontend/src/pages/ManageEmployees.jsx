@@ -208,7 +208,7 @@ function ManageEmployees() {
         </Link>
 
         <Link to="/admin-dashboard" className="btn btn-outline">
-          â† Dashboard
+          &larr; Dashboard
         </Link>
       </header>
 
@@ -395,4 +395,5 @@ function ManageEmployees() {
 }
 
 export default ManageEmployees
+
 

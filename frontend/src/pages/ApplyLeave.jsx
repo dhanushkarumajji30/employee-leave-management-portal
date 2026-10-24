@@ -119,7 +119,7 @@ function ApplyLeave() {
         </Link>
 
         <Link to="/employee-dashboard" className="btn btn-outline">
-          â† Dashboard
+          &larr; Dashboard
         </Link>
       </header>
 
@@ -208,4 +208,5 @@ function ApplyLeave() {
 }
 
 export default ApplyLeave
+
 
