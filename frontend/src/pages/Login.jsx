@@ -2,7 +2,8 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import '../App.css'
-import API_URL from "../api";
+import API_URL from '../api'
+
 function Login() {
   const navigate = useNavigate()
 
@@ -25,20 +26,19 @@ function Login() {
   const handleSubmit = async (event) => {
     event.preventDefault()
     setError('')
+    setLoading(true)
 
     try {
-      setLoading(true)
-
-      const response = await fetch(
-        `${API_URL}/api/auth/login`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(formData),
+      const response = await fetch(`${API_URL}/api/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-      )
+        body: JSON.stringify({
+          email: formData.email.trim().toLowerCase(),
+          password: formData.password,
+        }),
+      })
 
       const data = await response.json()
 
@@ -47,9 +47,7 @@ function Login() {
       }
 
       if (!data.token || !data.user) {
-        throw new Error(
-          'The server returned an invalid login response.',
-        )
+        throw new Error('Invalid login response from server.')
       }
 
       localStorage.setItem('token', data.token)
@@ -61,11 +59,15 @@ function Login() {
         navigate('/employee-dashboard')
       }
     } catch (err) {
-      setError(
-        err.message === 'Failed to fetch'
-          ? 'Cannot connect to the server. Check whether the backend is running.'
-          : err.message,
-      )
+      console.error('Login error:', err)
+
+      if (err.message === 'Failed to fetch') {
+        setError(
+          'Unable to connect to the server. Check the backend URL, server status, and CORS configuration.'
+        )
+      } else {
+        setError(err.message || 'Something went wrong. Please try again.')
+      }
     } finally {
       setLoading(false)
     }
@@ -93,7 +95,6 @@ function Login() {
 
         <form onSubmit={handleSubmit}>
           <label htmlFor="email">Email address</label>
-
           <input
             id="email"
             name="email"
@@ -122,12 +123,8 @@ function Login() {
             <button
               type="button"
               className="password-toggle"
-              onClick={() =>
-                setShowPassword((previous) => !previous)
-              }
-              aria-label={
-                showPassword ? 'Hide password' : 'Show password'
-              }
+              onClick={() => setShowPassword((previous) => !previous)}
+              aria-label={showPassword ? 'Hide password' : 'Show password'}
               aria-pressed={showPassword}
             >
               {showPassword ? 'Hide' : 'Show'}
