@@ -1,4 +1,4 @@
-
+﻿
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import '../App.css'
@@ -43,7 +43,7 @@ function AdminDashboard() {
       setError('')
 
       const response = await fetch(
-        'http://localhost:5000/api/leaveApplications',
+        `${API_URL}/api/leaveApplications`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -198,7 +198,7 @@ function AdminDashboard() {
 
           <div className="quick-links">
             <Link to="/manage-leaves" className="quick-link">
-              <span>📋</span>
+              <span>ðŸ“‹</span>
               <div>
                 <h3>Manage Leave Requests</h3>
                 <p>Review, approve, or reject applications.</p>
@@ -206,7 +206,7 @@ function AdminDashboard() {
             </Link>
 
             <Link to="/manage-employees" className="quick-link">
-              <span>👥</span>
+              <span>ðŸ‘¥</span>
               <div>
                 <h3>Manage Employees</h3>
                 <p>Add, edit, view, and delete employee records.</p>
@@ -214,7 +214,7 @@ function AdminDashboard() {
             </Link>
 
             <Link to="/leave-reports" className="quick-link">
-              <span>📊</span>
+              <span>ðŸ“Š</span>
               <div>
                 <h3>Leave Reports</h3>
                 <p>View application totals and leave records.</p>
@@ -286,3 +286,4 @@ function AdminDashboard() {
 }
 
 export default AdminDashboard
+

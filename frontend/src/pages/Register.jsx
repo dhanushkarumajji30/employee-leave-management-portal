@@ -1,4 +1,4 @@
-
+﻿
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import '../App.css'
@@ -37,7 +37,7 @@ function Register() {
       setLoading(true)
 
       const response = await fetch(
-        'http://localhost:5000/api/auth/register',
+        `${API_URL}/api/auth/register`,
         {
           method: 'POST',
           headers: {
@@ -137,7 +137,7 @@ function Register() {
         </p>
 
         <p className="auth-back">
-          <Link to="/">← Back to Home</Link>
+          <Link to="/">â† Back to Home</Link>
         </p>
       </section>
     </main>
@@ -145,3 +145,4 @@ function Register() {
 }
 
 export default Register
+

@@ -1,4 +1,4 @@
-
+﻿
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import '../App.css'
@@ -37,7 +37,7 @@ function LeaveHistory() {
   const fetchLeaveHistory = async (token) => {
     try {
       const response = await fetch(
-        'http://localhost:5000/api/leaveApplications',
+        `${API_URL}/api/leaveApplications`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -64,7 +64,7 @@ function LeaveHistory() {
   }
 
   const formatDate = (date) => {
-    if (!date) return '—'
+    if (!date) return 'â€”'
 
     return new Date(date).toLocaleDateString('en-IN', {
       day: '2-digit',
@@ -82,7 +82,7 @@ function LeaveHistory() {
         </Link>
 
         <Link to="/employee-dashboard" className="btn btn-outline">
-          ← Dashboard
+          â† Dashboard
         </Link>
       </header>
 
@@ -163,3 +163,4 @@ function LeaveHistory() {
 }
 
 export default LeaveHistory
+

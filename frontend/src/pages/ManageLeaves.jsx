@@ -1,4 +1,4 @@
-
+﻿
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import '../App.css'
@@ -42,7 +42,7 @@ function ManageLeaves() {
       setError('')
 
       const response = await fetch(
-        'http://localhost:5000/api/leaveApplications',
+        `${API_URL}/api/leaveApplications`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -75,7 +75,7 @@ function ManageLeaves() {
       const token = localStorage.getItem('token')
 
       const response = await fetch(
-        `http://localhost:5000/api/leaveApplications/${leaveId}`,
+        `${API_URL}/api/leaveApplications/${leaveId}`,
         {
           method: 'PUT',
           headers: {
@@ -109,7 +109,7 @@ function ManageLeaves() {
   }
 
   const formatDate = (date) => {
-    if (!date) return '—'
+    if (!date) return 'â€”'
 
     return new Date(date).toLocaleDateString('en-IN', {
       day: '2-digit',
@@ -127,7 +127,7 @@ function ManageLeaves() {
         </Link>
 
         <Link to="/admin-dashboard" className="btn btn-outline">
-          ← Dashboard
+          â† Dashboard
         </Link>
       </header>
 
@@ -177,7 +177,7 @@ function ManageLeaves() {
                 <tbody>
                   {leaves.map((leave) => (
                     <tr key={leave._id}>
-                      <td>{leave.employeeId || '—'}</td>
+                      <td>{leave.employeeId || 'â€”'}</td>
                       <td>{leave.leaveType}</td>
                       <td>{formatDate(leave.fromDate)}</td>
                       <td>{formatDate(leave.toDate)}</td>
@@ -231,3 +231,4 @@ function ManageLeaves() {
 }
 
 export default ManageLeaves
+

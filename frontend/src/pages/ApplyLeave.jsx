@@ -1,4 +1,4 @@
-
+﻿
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import '../App.css'
@@ -72,7 +72,7 @@ function ApplyLeave() {
       const token = localStorage.getItem('token')
 
       const response = await fetch(
-        'http://localhost:5000/api/leaveApplications',
+        `${API_URL}/api/leaveApplications`,
         {
           method: 'POST',
           headers: {
@@ -119,7 +119,7 @@ function ApplyLeave() {
         </Link>
 
         <Link to="/employee-dashboard" className="btn btn-outline">
-          ← Dashboard
+          â† Dashboard
         </Link>
       </header>
 
@@ -208,3 +208,4 @@ function ApplyLeave() {
 }
 
 export default ApplyLeave
+

@@ -1,4 +1,4 @@
-
+﻿
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import '../App.css'
@@ -145,7 +145,7 @@ function Login() {
         </p>
 
         <p className="auth-back">
-          <Link to="/">← Back to Home</Link>
+          <Link to="/">â† Back to Home</Link>
         </p>
       </section>
     </main>
@@ -153,3 +153,4 @@ function Login() {
 }
 
 export default Login
+

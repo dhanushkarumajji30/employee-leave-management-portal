@@ -1,4 +1,4 @@
-
+﻿
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import '../App.css'
@@ -54,7 +54,7 @@ function ManageEmployees() {
       setError('')
 
       const response = await fetch(
-        'http://localhost:5000/api/employees',
+        `${API_URL}/api/employees`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -101,8 +101,8 @@ function ManageEmployees() {
 
       const response = await fetch(
         isEditing
-          ? `http://localhost:5000/api/employees/${editingId}`
-          : 'http://localhost:5000/api/employees',
+          ? `${API_URL}/api/employees/${editingId}`
+          : `${API_URL}/api/employees`,
         {
           method: isEditing ? 'PUT' : 'POST',
           headers: {
@@ -170,7 +170,7 @@ function ManageEmployees() {
 
     try {
       const response = await fetch(
-        `http://localhost:5000/api/employees/${employee._id}`,
+        `${API_URL}/api/employees/${employee._id}`,
         {
           method: 'DELETE',
           headers: {
@@ -208,7 +208,7 @@ function ManageEmployees() {
         </Link>
 
         <Link to="/admin-dashboard" className="btn btn-outline">
-          ← Dashboard
+          â† Dashboard
         </Link>
       </header>
 
@@ -395,3 +395,4 @@ function ManageEmployees() {
 }
 
 export default ManageEmployees
+

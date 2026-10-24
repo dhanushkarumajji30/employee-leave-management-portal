@@ -1,4 +1,4 @@
-
+﻿
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import '../App.css'
@@ -38,7 +38,7 @@ function EmployeeDashboard() {
   const fetchLeaves = async (token) => {
     try {
       const response = await fetch(
-        'http://localhost:5000/api/leaveApplications',
+        `${API_URL}/api/leaveApplications`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -140,7 +140,7 @@ function EmployeeDashboard() {
               <p>Check the latest status of your requests.</p>
             </div>
 
-            <Link to="/leave-history">View History →</Link>
+            <Link to="/leave-history">View History â†’</Link>
           </div>
 
           {leaves.length === 0 ? (
@@ -195,17 +195,17 @@ function EmployeeDashboard() {
           <div className="quick-links">
             <Link to="/apply-leave" className="quick-link">
               <strong>Apply for Leave</strong>
-              <span>Submit a new leave request →</span>
+              <span>Submit a new leave request â†’</span>
             </Link>
 
             <Link to="/leave-history" className="quick-link">
               <strong>Leave History</strong>
-              <span>Review your previous applications →</span>
+              <span>Review your previous applications â†’</span>
             </Link>
 
             <Link to="/profile" className="quick-link">
               <strong>My Profile</strong>
-              <span>View and update your details →</span>
+              <span>View and update your details â†’</span>
             </Link>
           </div>
         </section>
@@ -215,3 +215,4 @@ function EmployeeDashboard() {
 }
 
 export default EmployeeDashboard
+

@@ -1,4 +1,4 @@
-
+﻿
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import '../App.css'
@@ -40,7 +40,7 @@ function LeaveReports() {
       setError('')
 
       const response = await fetch(
-        'http://localhost:5000/api/leaveApplications',
+        `${API_URL}/api/leaveApplications`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -94,7 +94,7 @@ function LeaveReports() {
         </Link>
 
         <Link to="/admin-dashboard" className="btn btn-outline">
-          ← Dashboard
+          â† Dashboard
         </Link>
       </header>
 
@@ -195,3 +195,4 @@ function LeaveReports() {
 }
 
 export default LeaveReports
+
