@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import '../App.css'
-
+import API_URL from "../api";
 function LeaveReports() {
   const navigate = useNavigate()
   const [leaves, setLeaves] = useState([])
