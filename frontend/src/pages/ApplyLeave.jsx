@@ -1,8 +1,9 @@
-
+﻿
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import '../App.css'
-import API_URL from "../api";
+import API_URL from '../api'
+
 function ApplyLeave() {
   const navigate = useNavigate()
 
@@ -40,10 +41,12 @@ function ApplyLeave() {
   }, [navigate])
 
   const handleChange = (event) => {
-    setFormData({
-      ...formData,
-      [event.target.name]: event.target.value,
-    })
+    const { name, value } = event.target
+
+    setFormData((previousData) => ({
+      ...previousData,
+      [name]: value,
+    }))
   }
 
   const handleSubmit = async (event) => {
@@ -51,7 +54,14 @@ function ApplyLeave() {
     setError('')
     setSuccess('')
 
-    if (formData.fromDate < new Date().toLocaleDateString('en-CA')) {
+    const today = new Date()
+    const localToday = [
+      today.getFullYear(),
+      String(today.getMonth() + 1).padStart(2, '0'),
+      String(today.getDate()).padStart(2, '0'),
+    ].join('-')
+
+    if (formData.fromDate < localToday) {
       setError('The starting date cannot be in the past.')
       return
     }
@@ -89,10 +99,13 @@ function ApplyLeave() {
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.message || 'Failed to submit leave application.')
+        throw new Error(
+          data.message || 'Failed to submit leave application.',
+        )
       }
 
       setSuccess('Leave application submitted successfully!')
+
       setFormData({
         leaveType: 'CL',
         fromDate: '',
@@ -102,8 +115,8 @@ function ApplyLeave() {
     } catch (err) {
       setError(
         err.message === 'Failed to fetch'
-          ? 'Cannot connect to the backend. Check whether the server is running.'
-          : err.message,
+          ? 'Cannot connect to the backend. Please check your connection.'
+          : err.message || 'Something went wrong. Please try again.',
       )
     } finally {
       setLoading(false)
@@ -127,78 +140,102 @@ function ApplyLeave() {
         <div className="leave-form-heading">
           <p className="dashboard-eyebrow">EMPLOYEE WORKSPACE</p>
           <h1>Apply for Leave</h1>
-          <p>Complete the form below to submit your leave request.</p>
+          <p>
+            Complete the form below to submit your leave request.
+          </p>
         </div>
 
         <section className="dashboard-panel">
-          {error && <div className="form-error">{error}</div>}
-          {success && <div className="form-success">{success}</div>}
+          {error && (
+            <div className="form-error" role="alert">
+              {error}
+            </div>
+          )}
 
-          <form onSubmit={handleSubmit} className="leave-form">
-            <label htmlFor="leaveType">Leave Type</label>
-            <select
-              id="leaveType"
-              name="leaveType"
-              value={formData.leaveType}
-              onChange={handleChange}
-              required
-            >
-              <option value="CL">Casual Leave (CL)</option>
-              <option value="SL">Sick Leave (SL)</option>
-              <option value="EL">Earned Leave (EL)</option>
-              <option value="OD">On-Duty (OD)</option>
-            </select>
+          {success && (
+            <div className="form-success" role="status">
+              {success}
+            </div>
+          )}
+
+          <form
+            onSubmit={handleSubmit}
+            className="leave-form apply-leave-form"
+          >
+            <div className="apply-field">
+              <label htmlFor="leaveType">Leave Type</label>
+
+              <select
+                id="leaveType"
+                name="leaveType"
+                value={formData.leaveType}
+                onChange={handleChange}
+                required
+              >
+                <option value="CL">Casual Leave (CL)</option>
+                <option value="SL">Sick Leave (SL)</option>
+                <option value="EL">Earned Leave (EL)</option>
+                <option value="OD">On-Duty (OD)</option>
+              </select>
+            </div>
 
             <div className="leave-date-grid">
-              <div>
+              <div className="apply-field">
                 <label htmlFor="fromDate">From Date</label>
+
                 <input
                   id="fromDate"
                   name="fromDate"
                   type="date"
                   value={formData.fromDate}
-                  min={new Date().toLocaleDateString('en-CA')}
+                  min={localDateToday()}
                   onChange={handleChange}
                   required
                 />
               </div>
 
-              <div>
+              <div className="apply-field">
                 <label htmlFor="toDate">To Date</label>
+
                 <input
                   id="toDate"
                   name="toDate"
                   type="date"
                   value={formData.toDate}
-                  min={formData.fromDate || new Date().toLocaleDateString('en-CA')}
+                  min={formData.fromDate || localDateToday()}
                   onChange={handleChange}
                   required
                 />
               </div>
             </div>
 
-            <label htmlFor="reason">Reason for Leave</label>
-            <textarea
-              id="reason"
-              name="reason"
-              rows="5"
-              placeholder="Explain why you need leave..."
-              value={formData.reason}
-              onChange={handleChange}
-              maxLength={500}
-              required
-            />
+            <div className="apply-field">
+              <label htmlFor="reason">Reason for Leave</label>
 
-            <p className="leave-form-hint">
-              Maximum 500 characters.
-            </p>
+              <textarea
+                id="reason"
+                name="reason"
+                rows={5}
+                placeholder="Explain why you need leave..."
+                value={formData.reason}
+                onChange={handleChange}
+                maxLength={500}
+                required
+              />
+
+              <small className="leave-form-hint">
+                Maximum 500 characters.
+              </small>
+            </div>
 
             <button
               type="submit"
               className="btn btn-primary leave-submit"
               disabled={loading}
             >
-              {loading ? 'Submitting...' : 'Submit Leave Application'}
+              {loading
+                ? 'Submitting...'
+                : 'Submit Leave Application'}
             </button>
           </form>
         </section>
@@ -207,6 +244,14 @@ function ApplyLeave() {
   )
 }
 
+function localDateToday() {
+  const date = new Date()
+
+  return [
+    date.getFullYear(),
+    String(date.getMonth() + 1).padStart(2, '0'),
+    String(date.getDate()).padStart(2, '0'),
+  ].join('-')
+}
+
 export default ApplyLeave
-
-
