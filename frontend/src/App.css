@@ -1319,3 +1319,30 @@ a {
         width: 100%;
     }
 }
+
+/* Fix Leave Type and Reason label alignment */
+.leave-form-container .leave-form .form-group label,
+.leave-form-container .leave-form label[for="leaveType"],
+.leave-form-container .leave-form label[for="reason"] {
+    display: block !important;
+    position: static !important;
+    float: none !important;
+    text-align: left !important;
+    align-self: flex-start !important;
+    transform: none !important;
+    margin-left: 0 !important;
+    padding-left: 0 !important;
+    width: 100% !important;
+    order: -1;
+}
+
+/* Keep select and reason textarea aligned */
+.leave-form-container .leave-form select,
+.leave-form-container .leave-form textarea {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    box-sizing: border-box !important;
+}
