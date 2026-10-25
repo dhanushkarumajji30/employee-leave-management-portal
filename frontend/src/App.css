@@ -1403,3 +1403,123 @@ a {
     align-self: flex-start;
     margin-top: 4px;
 }
+
+/* =========================================
+   APPLY LEAVE PAGE - FINAL FORM LAYOUT
+   ========================================= */
+
+.leave-form-container .apply-leave-form {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  gap: 20px !important;
+  width: 100%;
+  margin-top: 0;
+}
+
+/* Each label and control stay together */
+.leave-form-container .apply-leave-form .apply-field {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+}
+
+/* Labels always appear above their controls */
+.leave-form-container .apply-leave-form .apply-field > label {
+  display: block !important;
+  position: static !important;
+  align-self: stretch !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  float: none !important;
+  transform: none !important;
+  text-align: left !important;
+  color: #344054;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+/* Inputs, dropdown and textarea */
+.leave-form-container .apply-leave-form .apply-field > input,
+.leave-form-container .apply-leave-form .apply-field > select,
+.leave-form-container .apply-leave-form .apply-field > textarea {
+  display: block !important;
+  position: static !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  min-height: 44px;
+  margin: 0 !important;
+  padding: 11px 13px;
+  box-sizing: border-box !important;
+  float: none !important;
+  border: 1px solid #d9e0ec;
+  border-radius: 9px;
+  background: #ffffff;
+  color: #172033;
+  font: inherit;
+  font-size: 14px;
+}
+
+.leave-form-container .apply-leave-form .apply-field > textarea {
+  min-height: 110px;
+  resize: vertical;
+}
+
+/* From Date and To Date */
+.leave-form-container .apply-leave-form .leave-date-grid {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: 16px;
+  width: 100%;
+  min-width: 0;
+}
+
+.leave-form-container .apply-leave-form .leave-date-grid > .apply-field {
+  min-width: 0;
+}
+
+/* Character limit note */
+.leave-form-container .apply-leave-form .leave-form-hint {
+  display: block;
+  margin: 0;
+  color: #647087;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* Submit button */
+.leave-form-container .apply-leave-form > .leave-submit {
+  display: inline-flex;
+  align-self: flex-start;
+  width: auto;
+  max-width: 100%;
+  margin: 0;
+}
+
+/* Keyboard focus */
+.leave-form-container .apply-leave-form .apply-field > input:focus,
+.leave-form-container .apply-leave-form .apply-field > select:focus,
+.leave-form-container .apply-leave-form .apply-field > textarea:focus {
+  outline: none;
+  border-color: #3156d9;
+  box-shadow: 0 0 0 3px rgba(49, 86, 217, 0.1);
+}
+
+/* Mobile screens */
+@media (max-width: 600px) {
+  .leave-form-container .apply-leave-form .leave-date-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .leave-form-container .apply-leave-form > .leave-submit {
+    width: 100%;
+    align-self: stretch;
+  }
+}
