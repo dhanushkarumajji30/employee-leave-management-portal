@@ -1,8 +1,9 @@
-
+﻿
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import '../App.css'
-import API_URL from "../api";
+import API_URL from '../api'
+
 const emptyForm = {
   employeeId: '',
   employeeName: '',
@@ -48,7 +49,9 @@ function ManageEmployees() {
     }
   }, [navigate])
 
-  const fetchEmployees = async (token = localStorage.getItem('token')) => {
+  const fetchEmployees = async (
+    token = localStorage.getItem('token'),
+  ) => {
     try {
       setLoading(true)
       setError('')
@@ -65,10 +68,14 @@ function ManageEmployees() {
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.message || 'Unable to load employees.')
+        throw new Error(
+          data.message || 'Unable to load employees.',
+        )
       }
 
-      setEmployees(Array.isArray(data) ? data : data.employees || [])
+      setEmployees(
+        Array.isArray(data) ? data : data.employees || [],
+      )
     } catch (err) {
       setError(err.message || 'Unable to load employees.')
     } finally {
@@ -77,10 +84,12 @@ function ManageEmployees() {
   }
 
   const handleChange = (event) => {
-    setFormData({
-      ...formData,
-      [event.target.name]: event.target.value,
-    })
+    const { name, value } = event.target
+
+    setFormData((current) => ({
+      ...current,
+      [name]: value,
+    }))
   }
 
   const resetForm = () => {
@@ -97,6 +106,12 @@ function ManageEmployees() {
       setSaving(true)
 
       const token = localStorage.getItem('token')
+
+      if (!token) {
+        navigate('/login', { replace: true })
+        return
+      }
+
       const isEditing = Boolean(editingId)
 
       const response = await fetch(
@@ -124,7 +139,9 @@ function ManageEmployees() {
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.message || 'Unable to save employee.')
+        throw new Error(
+          data.message || 'Unable to save employee.',
+        )
       }
 
       setMessage(
@@ -155,7 +172,11 @@ function ManageEmployees() {
     setEditingId(employee._id)
     setError('')
     setMessage('')
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    })
   }
 
   const handleDelete = async (employee) => {
@@ -182,7 +203,9 @@ function ManageEmployees() {
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.message || 'Unable to delete employee.')
+        throw new Error(
+          data.message || 'Unable to delete employee.',
+        )
       }
 
       setEmployees((current) =>
@@ -215,82 +238,124 @@ function ManageEmployees() {
       <section className="dashboard-content">
         <div className="dashboard-welcome">
           <div>
-            <p className="dashboard-eyebrow">ADMIN WORKSPACE</p>
+            <p className="dashboard-eyebrow">
+              ADMIN WORKSPACE
+            </p>
             <h1>Manage Employees</h1>
-            <p>Add, edit, view, and delete employee records.</p>
+            <p>
+              Add, edit, view, and delete employee records.
+            </p>
           </div>
         </div>
 
-        {error && <div className="form-error">{error}</div>}
-        {message && <div className="form-success">{message}</div>}
+        {error && (
+          <div className="form-error" role="alert">
+            {error}
+          </div>
+        )}
+
+        {message && (
+          <div className="form-success" role="status">
+            {message}
+          </div>
+        )}
 
         <section className="dashboard-panel">
-          <h2>{editingId ? 'Edit Employee' : 'Add New Employee'}</h2>
+          <h2>
+            {editingId ? 'Edit Employee' : 'Add New Employee'}
+          </h2>
 
-          <form className="leave-form" onSubmit={handleSubmit}>
-            <label htmlFor="employeeId">Employee ID</label>
-            <input
-              id="employeeId"
-              name="employeeId"
-              value={formData.employeeId}
-              onChange={handleChange}
-              placeholder="e.g. EMP1001"
-              required
-            />
+          <form
+            className="leave-form manage-employees-form"
+            onSubmit={handleSubmit}
+          >
+            <div className="employee-field">
+              <label htmlFor="employeeId">
+                Employee ID
+              </label>
+              <input
+                id="employeeId"
+                name="employeeId"
+                value={formData.employeeId}
+                onChange={handleChange}
+                placeholder="e.g. EMP1001"
+                required
+              />
+            </div>
 
-            <label htmlFor="employeeName">Full Name</label>
-            <input
-              id="employeeName"
-              name="employeeName"
-              value={formData.employeeName}
-              onChange={handleChange}
-              placeholder="Employee name"
-              required
-            />
+            <div className="employee-field">
+              <label htmlFor="employeeName">
+                Full Name
+              </label>
+              <input
+                id="employeeName"
+                name="employeeName"
+                value={formData.employeeName}
+                onChange={handleChange}
+                placeholder="Employee name"
+                required
+              />
+            </div>
 
-            <label htmlFor="department">Department</label>
-            <input
-              id="department"
-              name="department"
-              value={formData.department}
-              onChange={handleChange}
-              placeholder="e.g. Computer Science"
-              required
-            />
+            <div className="employee-field">
+              <label htmlFor="department">
+                Department
+              </label>
+              <input
+                id="department"
+                name="department"
+                value={formData.department}
+                onChange={handleChange}
+                placeholder="e.g. Computer Science"
+                required
+              />
+            </div>
 
-            <label htmlFor="designation">Designation</label>
-            <input
-              id="designation"
-              name="designation"
-              value={formData.designation}
-              onChange={handleChange}
-              placeholder="e.g. Software Engineer"
-              required
-            />
+            <div className="employee-field">
+              <label htmlFor="designation">
+                Designation
+              </label>
+              <input
+                id="designation"
+                name="designation"
+                value={formData.designation}
+                onChange={handleChange}
+                placeholder="e.g. Software Engineer"
+                required
+              />
+            </div>
 
-            <label htmlFor="email">Email Address</label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              value={formData.email}
-              onChange={handleChange}
-              placeholder="employee@example.com"
-              required
-            />
+            <div className="employee-field">
+              <label htmlFor="email">
+                Email Address
+              </label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="employee@example.com"
+                required
+              />
+            </div>
 
-            <label htmlFor="mobile">Mobile Number</label>
-            <input
-              id="mobile"
-              name="mobile"
-              type="tel"
-              value={formData.mobile}
-              onChange={handleChange}
-              placeholder="10-digit mobile number"
-              pattern="[0-9]{10}"
-              maxLength={10}
-              required
-            />
+            <div className="employee-field">
+              <label htmlFor="mobile">
+                Mobile Number
+              </label>
+              <input
+                id="mobile"
+                name="mobile"
+                type="tel"
+                value={formData.mobile}
+                onChange={handleChange}
+                placeholder="10-digit mobile number"
+                pattern="[0-9]{10}"
+                maxLength={10}
+                required
+              />
+            </div>
 
             <div className="employee-form-actions">
               <button
@@ -326,11 +391,12 @@ function ManageEmployees() {
             </div>
 
             <button
+              type="button"
               className="btn btn-outline"
               onClick={() => fetchEmployees()}
               disabled={loading}
             >
-              Refresh
+              {loading ? 'Loading...' : 'Refresh'}
             </button>
           </div>
 
@@ -339,7 +405,9 @@ function ManageEmployees() {
           ) : employees.length === 0 ? (
             <div className="dashboard-empty">
               <h3>No employees found</h3>
-              <p>Add an employee using the form above.</p>
+              <p>
+                Add an employee using the form above.
+              </p>
             </div>
           ) : (
             <div className="table-wrapper">
@@ -368,6 +436,7 @@ function ManageEmployees() {
                       <td>
                         <div className="employee-form-actions">
                           <button
+                            type="button"
                             className="btn btn-outline"
                             onClick={() => handleEdit(employee)}
                           >
@@ -375,6 +444,7 @@ function ManageEmployees() {
                           </button>
 
                           <button
+                            type="button"
                             className="btn btn-reject"
                             onClick={() => handleDelete(employee)}
                           >
@@ -395,5 +465,3 @@ function ManageEmployees() {
 }
 
 export default ManageEmployees
-
-
