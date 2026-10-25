@@ -1,9 +1,8 @@
-
+﻿
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../App.css";
 import API_URL from "../api";
-
 
 function Profile() {
     const navigate = useNavigate();
@@ -22,6 +21,27 @@ function Profile() {
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
 
+    // Safely handle JSON and HTML responses
+    const readResponse = async (response) => {
+        const contentType = response.headers.get("content-type") || "";
+
+        if (contentType.includes("application/json")) {
+            return await response.json();
+        }
+
+        const text = await response.text();
+
+        if (!response.ok) {
+            throw new Error(
+                `Server returned HTTP ${response.status}. Check the API URL and backend route.`
+            );
+        }
+
+        throw new Error(
+            "The server returned HTML instead of JSON. Check the profile API route."
+        );
+    };
+
     useEffect(() => {
         const fetchProfile = async () => {
             const token = localStorage.getItem("token");
@@ -32,14 +52,19 @@ function Profile() {
             }
 
             try {
-                const response = await fetch(`${API_URL}/employees/me`, {
-                    method: "GET",
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                });
+                setError("");
 
-                const data = await response.json();
+                const response = await fetch(
+                    `${API_URL}/api/employees/me`,
+                    {
+                        method: "GET",
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    }
+                );
+
+                const data = await readResponse(response);
 
                 if (response.status === 401) {
                     localStorage.removeItem("token");
@@ -50,20 +75,24 @@ function Profile() {
 
                 if (!response.ok) {
                     throw new Error(
-                        data.message || "Failed to load profile"
+                        data.message || "Failed to load profile."
                     );
                 }
 
+                // Supports either a direct employee object or { employee: {...} }
+                const employee = data.employee || data;
+
                 setProfile({
-                    employeeId: data.employeeId || "",
-                    employeeName: data.employeeName || "",
-                    department: data.department || "",
-                    designation: data.designation || "",
-                    email: data.email || "",
-                    mobile: data.mobile || ""
+                    employeeId: employee.employeeId || "",
+                    employeeName: employee.employeeName || "",
+                    department: employee.department || "",
+                    designation: employee.designation || "",
+                    email: employee.email || "",
+                    mobile: employee.mobile || ""
                 });
             } catch (err) {
-                setError(err.message || "Unable to connect to the server");
+                console.error("Profile loading error:", err);
+                setError(err.message || "Unable to load your profile.");
             } finally {
                 setLoading(false);
             }
@@ -97,29 +126,37 @@ function Profile() {
             return;
         }
 
-        if (!profile.employeeName.trim() || !profile.mobile.trim()) {
-            setError("Employee name and mobile number are required.");
+        if (
+            !profile.employeeName.trim() ||
+            !profile.department.trim() ||
+            !profile.designation.trim() ||
+            !profile.mobile.trim()
+        ) {
+            setError("Please complete all required fields.");
             return;
         }
 
         setSaving(true);
 
         try {
-            const response = await fetch(`${API_URL}/employees/me`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`
-                },
-                body: JSON.stringify({
-                    employeeName: profile.employeeName,
-                    department: profile.department,
-                    designation: profile.designation,
-                    mobile: profile.mobile
-                })
-            });
+            const response = await fetch(
+                `${API_URL}/api/employees/me`,
+                {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        employeeName: profile.employeeName.trim(),
+                        department: profile.department.trim(),
+                        designation: profile.designation.trim(),
+                        mobile: profile.mobile.trim()
+                    })
+                }
+            );
 
-            const data = await response.json();
+            const data = await readResponse(response);
 
             if (response.status === 401) {
                 localStorage.removeItem("token");
@@ -129,19 +166,27 @@ function Profile() {
             }
 
             if (!response.ok) {
-                throw new Error(data.message || "Failed to update profile");
+                throw new Error(
+                    data.message || "Failed to update profile."
+                );
             }
 
-            if (data.employee) {
-                setProfile((previousProfile) => ({
-                    ...previousProfile,
-                    ...data.employee
-                }));
-            }
+            const employee = data.employee || data;
+
+            setProfile((previousProfile) => ({
+                ...previousProfile,
+                employeeId: employee.employeeId || previousProfile.employeeId,
+                employeeName: employee.employeeName || previousProfile.employeeName,
+                department: employee.department || previousProfile.department,
+                designation: employee.designation || previousProfile.designation,
+                email: employee.email || previousProfile.email,
+                mobile: employee.mobile || previousProfile.mobile
+            }));
 
             setSuccess(data.message || "Profile updated successfully.");
         } catch (err) {
-            setError(err.message || "Unable to connect to the server");
+            console.error("Profile update error:", err);
+            setError(err.message || "Unable to update your profile.");
         } finally {
             setSaving(false);
         }
@@ -167,7 +212,7 @@ function Profile() {
                 </div>
 
                 <Link to="/employee-dashboard" className="btn btn-outline">
-                    Back to Dashboard
+                    &larr; Back to Dashboard
                 </Link>
             </header>
 
@@ -181,12 +226,6 @@ function Profile() {
                 <section className="dashboard-panel">
                     {error && <p className="form-error">{error}</p>}
                     {success && <p className="form-success">{success}</p>}
-
-                    {!profile.employeeId && !error && (
-                        <p className="form-error">
-                            Your employee profile could not be identified.
-                        </p>
-                    )}
 
                     <form className="leave-form" onSubmit={handleSubmit}>
                         <div className="form-group">
@@ -270,5 +309,3 @@ function Profile() {
 }
 
 export default Profile;
-
-
