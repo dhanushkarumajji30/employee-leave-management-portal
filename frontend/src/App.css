@@ -1346,3 +1346,60 @@ a {
     margin-right: 0 !important;
     box-sizing: border-box !important;
 }
+
+/* Correct Apply Leave form layout */
+.leave-form-container .leave-form {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 20px;
+}
+
+/* Each field gets its own row */
+.leave-form-container .leave-form .form-group {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    width: 100% !important;
+    min-width: 0;
+    position: relative;
+}
+
+/* Labels stay above their respective fields */
+.leave-form-container .leave-form .form-group label {
+    display: block !important;
+    position: static !important;
+    width: 100% !important;
+    text-align: left !important;
+    margin: 0 0 8px 0 !important;
+    padding: 0 !important;
+    transform: none !important;
+    float: none !important;
+}
+
+/* Inputs, dropdowns, dates and textareas */
+.leave-form-container .leave-form .form-group input,
+.leave-form-container .leave-form .form-group select,
+.leave-form-container .leave-form .form-group textarea {
+    display: block !important;
+    position: static !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+    float: none !important;
+}
+
+/* Character limit helper text */
+.leave-form-container .leave-form .form-group small {
+    display: block;
+    margin-top: 6px;
+}
+
+/* Submit button stays below the fields */
+.leave-form-container .leave-form .leave-submit {
+    display: block;
+    align-self: flex-start;
+    margin-top: 4px;
+}
