@@ -1255,3 +1255,67 @@ a {
     margin-left: 0;
     margin-right: 0;
 }
+
+/* Fix Apply Leave and Profile form alignment */
+.leave-form-container .leave-form {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    gap: 18px;
+}
+
+.leave-form-container .leave-form .form-group {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    min-width: 0;
+    margin: 0;
+}
+
+.leave-form-container .leave-form .form-group label {
+    display: block;
+    position: static;
+    width: 100%;
+    margin: 0 0 8px 0;
+    padding: 0;
+    text-align: left;
+    transform: none;
+    float: none;
+}
+
+.leave-form-container .leave-form .form-group input,
+.leave-form-container .leave-form .form-group select,
+.leave-form-container .leave-form .form-group textarea {
+    display: block;
+    position: static;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    margin: 0;
+    box-sizing: border-box;
+    float: none;
+}
+
+.leave-form-container .leave-form .form-group textarea {
+    resize: vertical;
+}
+
+.leave-form-container .leave-form .leave-submit {
+    align-self: flex-start;
+}
+
+/* Keep forms properly sized on smaller screens */
+@media (max-width: 600px) {
+    .leave-form-container {
+        width: 100%;
+        max-width: 100%;
+        padding: 16px;
+        box-sizing: border-box;
+    }
+
+    .leave-form-container .leave-form {
+        width: 100%;
+    }
+}
